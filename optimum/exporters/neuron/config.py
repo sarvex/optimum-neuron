@@ -17,7 +17,7 @@ Common Neuron configuration classes that handle most of the features for buildin
 configurations.
 """
 
-from ...utils import DummyTextInputGenerator, logging
+from ...utils import DummyTextInputGenerator, DummyVisionInputGenerator, logging
 from .base import NeuronConfig
 
 
@@ -31,3 +31,12 @@ class TextEncoderNeuronConfig(NeuronConfig):
 
     DUMMY_INPUT_GENERATOR_CLASSES = (DummyTextInputGenerator,)
     MANDATORY_AXES = ("batch_size", "sequence_length", ("multiple-choice", "num_choices"))
+
+
+class VisionNeuronConfig(NeuronConfig):
+    """
+    Handles vision architectures.
+    """
+
+    DUMMY_INPUT_GENERATOR_CLASSES = (DummyVisionInputGenerator,)
+    MANDATORY_AXES = ("batch_size", "num_channels", "width", "height")

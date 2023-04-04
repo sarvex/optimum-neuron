@@ -18,7 +18,7 @@
 from typing import List
 
 from ...utils.normalized_config import NormalizedConfigManager
-from .config import TextEncoderNeuronConfig
+from .config import TextEncoderNeuronConfig, VisionNeuronConfig
 
 
 class BertNeuronConfig(TextEncoderNeuronConfig):
@@ -93,4 +93,48 @@ class DebertaNeuronConfig(BertNeuronConfig):
 
 
 class DebertaV2NeuronConfig(DebertaNeuronConfig):
+    pass
+
+
+class GPT2NeuronConfig:
+    pass
+
+
+class GPT2NeoNeuronConfig:
+    pass
+
+
+class BartNeuronConfig:
+    pass
+
+
+class MarianNeuronConfig:
+    pass
+
+
+class M2M100NeuronConfig:
+    pass
+
+
+class T5NeuronConfig:
+    pass
+
+
+class VitNeuronConfig(VisionNeuronConfig):
+    NORMALIZED_CONFIG_CLASS = NormalizedConfigManager.get_normalized_config_class("vit")
+
+    @property
+    def inputs(self) -> List[str]:
+        return ["pixel_values"]
+
+
+class LayoutLMv3NeuronConfig:
+    pass
+
+
+class CLIPNeuronConfig:
+    pass
+
+
+class Wav2Vec2NeuronConfig:
     pass
