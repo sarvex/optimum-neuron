@@ -85,8 +85,7 @@ def _generate_supported_model_class_names(
 
     model_class_names = []
     for task in supported_tasks:
-        class_name = task_mapping[task].get(model_type, None)
-        if class_name:
+        if class_name := task_mapping[task].get(model_type, None):
             model_class_names.append(class_name)
 
     return model_class_names
@@ -153,10 +152,7 @@ class FirstAndLastDataset(Dataset):
         if num_batches >= 1 and remaining != 0:
 
             def map_fn(example):
-                if isinstance(example, torch.Tensor):
-                    return example[:remaining]
-                else:
-                    return example
+                return example[:remaining] if isinstance(example, torch.Tensor) else example
 
             last_batch = tree_map(map_fn, first_batch)
             samples += [last_batch] * self.num_repeat

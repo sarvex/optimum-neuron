@@ -73,9 +73,7 @@ def validate_model_outputs(
         else:
             atol = config.ATOL_FOR_VALIDATION
 
-    input_shapes = {}
-    for axe in config.mandatory_axes:
-        input_shapes[axe] = getattr(config, axe)
+    input_shapes = {axe: getattr(config, axe) for axe in config.mandatory_axes}
     ref_inputs = config.generate_dummy_inputs(return_tuple=False, **input_shapes)
     with torch.no_grad():
         reference_model.eval()
@@ -96,9 +94,8 @@ def validate_model_outputs(
             f"Neuron model output names: {neuron_output_names_set}"
             f"Difference: {neuron_output_names_set.difference(neuron_output_names_set)}"
         )
-    else:
-        neuron_output_names = ", ".join(neuron_output_names_set)
-        logger.info(f"\t-[✓] Neuron model output names match reference model ({neuron_output_names})")
+    neuron_output_names = ", ".join(neuron_output_names_set)
+    logger.info(f"\t-[✓] Neuron model output names match reference model ({neuron_output_names})")
 
     # Check if the number of outputs matches the number of output names
     if len(neuron_output_names_set) != len(neuron_outputs):
@@ -116,7 +113,7 @@ def validate_model_outputs(
         logger.info(f'\t- Validating Neuron Model output "{name}":')
 
         # Shape
-        if not output.shape == ref_output.shape:
+        if output.shape != ref_output.shape:
             logger.error(f"\t\t-[x] shape {output.shape} doesn't match {ref_output.shape}")
             shape_failures.append((name, ref_output.shape, output.shape))
         else:
@@ -199,10 +196,7 @@ def export_neuronx(
             logger.info(f"\t- {override_config_key} -> {override_config_value}")
             setattr(model.config, override_config_key, override_config_value)
 
-    input_shapes = {}
-    for axe in config.mandatory_axes:
-        input_shapes[axe] = getattr(config, axe)
-
+    input_shapes = {axe: getattr(config, axe) for axe in config.mandatory_axes}
     dummy_inputs = config.generate_dummy_inputs(**input_shapes)
 
     if auto_cast is not None:
@@ -265,10 +259,7 @@ def export_neuron(
             logger.info(f"\t- {override_config_key} -> {override_config_value}")
             setattr(model.config, override_config_key, override_config_value)
 
-    input_shapes = {}
-    for axe in config.mandatory_axes:
-        input_shapes[axe] = getattr(config, axe)
-
+    input_shapes = {axe: getattr(config, axe) for axe in config.mandatory_axes}
     dummy_inputs = config.generate_dummy_inputs(**input_shapes)
     compiler_args = convert_neuronx_compiler_args_to_neuron(auto_cast, auto_cast_type, disable_fast_relayout)
     neuron_model = neuron.trace(model, dummy_inputs, compiler_args=compiler_args)

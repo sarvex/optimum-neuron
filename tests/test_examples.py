@@ -53,9 +53,10 @@ def _get_supported_models_for_script(
     for model_type, model_name in models_to_test.items():
         if model_type in to_exclude:
             continue
-        if CONFIG_MAPPING[model_type] in task_mapping:
-            if model_type == "bart" and task_mapping is not MODEL_FOR_SEQ_TO_SEQ_CAUSAL_LM_MAPPING:
-                continue
+        if CONFIG_MAPPING[model_type] in task_mapping and (
+            model_type != "bart"
+            or task_mapping is MODEL_FOR_SEQ_TO_SEQ_CAUSAL_LM_MAPPING
+        ):
             supported_models.append((model_type, model_name))
     return supported_models
 
@@ -136,7 +137,7 @@ class ExampleTestMeta(type):
                 raise ValueError("An example name must be provided")
             example_script = Path(self.EXAMPLE_DIR).glob(f"*/{self.EXAMPLE_NAME}.py")
             example_script = list(example_script)
-            if len(example_script) == 0:
+            if not example_script:
                 raise RuntimeError(f"Could not find {self.EXAMPLE_NAME}.py in examples located in {self.EXAMPLE_DIR}")
             elif len(example_script) > 1:
                 raise RuntimeError(f"Found more than {self.EXAMPLE_NAME}.py in examples located in {self.EXAMPLE_DIR}")
@@ -303,11 +304,7 @@ class ExampleTesterBase(TestCase):
             program = [neuron_parallel_compile_path] + program
 
         # TODO: make that a parameter to the function?
-        if self.MAX_STEPS is not None:
-            max_steps = f"--max_steps {self.MAX_STEPS}"
-        else:
-            max_steps = ""
-
+        max_steps = "" if self.MAX_STEPS is None else f"--max_steps {self.MAX_STEPS}"
         cmd_line = program + [
             f"{script}",
             f"--model_name_or_path {model_name}",

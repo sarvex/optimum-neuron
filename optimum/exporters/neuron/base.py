@@ -155,13 +155,11 @@ class NeuronConfig(ExportConfig, ABC):
 
     def __setattr__(self, name: str, value: Any) -> None:
         mandatory_axes = getattr(self, "mandatory_axes", [])
-        if name in mandatory_axes:
-            if value is None:
-                if self._normalized_config.has_attribute(name):
-                    value = getattr(self._normalized_config, name)
-            self._axes[name] = value
-        else:
+        if name not in mandatory_axes:
             return super().__setattr__(name, value)
+        if value is None and self._normalized_config.has_attribute(name):
+            value = getattr(self._normalized_config, name)
+        self._axes[name] = value
 
     def _validate_mandatory_axes(self, **kwargs):
         for name, axis_dim in self._axes.items():
@@ -233,7 +231,4 @@ class NeuronConfig(ExportConfig, ABC):
                     "to the model Neuron config."
                 )
 
-        if return_tuple is True:
-            return tuple(dummy_inputs.values())
-        else:
-            return dummy_inputs
+        return tuple(dummy_inputs.values()) if return_tuple is True else dummy_inputs

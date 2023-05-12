@@ -91,7 +91,7 @@ def _get_commands_to_test(models_to_test):
             extra_command = " ".join(
                 [" ".join([arg, option]) for arg, option in zip(command_items, extra_arg_options)]
             )
-            commands_to_test.append((test_name, base_command + " " + extra_command))
+            commands_to_test.append((test_name, f"{base_command} {extra_command}"))
 
     return sorted(commands_to_test)
 
@@ -110,6 +110,6 @@ class TestCLI(unittest.TestCase):
     @parameterized.expand(_get_commands_to_test(_get_models_to_test(EXPORT_MODELS_TINY)))
     def test_export_commands(self, test_name, command_content):
         with tempfile.TemporaryDirectory() as tempdir:
-            command = command_content + f" {tempdir}"
+            command = f"{command_content} {tempdir}"
 
             subprocess.run(command, shell=True, check=True)

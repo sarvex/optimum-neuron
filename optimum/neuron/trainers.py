@@ -43,10 +43,9 @@ class AugmentTrainerForTrainiumMixin:
             raise TypeError(f"{self.__class__.__name__} can only be mixed with Trainer subclasses.")
 
         training_args = kwargs.get("args", None)
-        if training_args is not None:
-            if training_args.bf16:
-                training_args.bf16 = False
-                os.environ["XLA_USE_BF16"] = "1"
+        if training_args is not None and training_args.bf16:
+            training_args.bf16 = False
+            os.environ["XLA_USE_BF16"] = "1"
 
         self.validate_args(training_args)
         if is_precompilation():

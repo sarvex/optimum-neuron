@@ -87,7 +87,7 @@ def download_examples_from_transformers(
             match_ = re.search(pattern, repo.git.branch("--all"))
             if match_ is None:
                 raise ValueError(f"Could not find the {version} version in the Transformers repo.")
-            repo.git.checkout(match_.group(0))
+            repo.git.checkout(match_[0])
 
         path_prefix = Path(tmpdirname) / "examples" / "pytorch"
         dest_dir.mkdir(parents=True, exist_ok=True)
@@ -112,7 +112,7 @@ def remove_import(pattern: re.Pattern, file_content: str) -> Tuple[str, str, int
     match_ = re.search(pattern, file_content)
     if match_ is None:
         raise ValueError(f"Could not find a match for pattern {pattern}.")
-    cls_ = match_.group(2)
+    cls_ = match_[2]
     new_content = file_content[: match_.start(1)] + file_content[match_.end(1) :]
     return cls_, new_content, match_.end(0) - (match_.end(1) - match_.start(1))
 
@@ -121,7 +121,7 @@ def remove_trainer_import(file_content: str) -> tuple[str, str, int]:
     match_ = re.search(TRAINER_IMPORT_PATTERN, file_content)
     if match_ is None:
         raise ValueError("Could not find the import of the Trainer class from transformers.")
-    trainer_cls = match_.group(2)
+    trainer_cls = match_[2]
     new_content = file_content[: match_.start(1)] + file_content[match_.end(1) :]
     return trainer_cls, new_content, match_.end(0) - (match_.end(1) - match_.start(1))
 
